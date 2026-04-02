@@ -1,17 +1,213 @@
 {
-  "name": "propcon-canvassing-app",
-  "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install --include=dev --no-audit --no-fund",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}
+Vercel setting
+Node.js Version = 20.x
+
+After you do those 3 things, send me the next build log if it still fails.
+
+it say "build fail" with the message "Command "npm run build" exited with 127"
+
+That error means:
+
+npm run build is trying to run something that does not exist
+
+In your case, the most likely cause is still this line in package.json:
+
+"build": "tsc -b && vite build"
+
+The 127 error usually means:
+
+command not found
+
+So Vercel is still likely trying to run tsc.
+
+Do this exactly in GitHub
+Step 1
+
+Open your GitHub repo.
+
+Step 2
+
+Click on:
+
+package.json
+Step 3
+
+Click the pencil/edit button.
+
+Step 4
+
+Find this section:
+
+"scripts": {
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "preview": "vite preview"
+}
+Step 5
+
+Replace it with this:
+
+"scripts": {
   "dev": "vite",
   "build": "vite build",
   "preview": "vite preview"
 }
+Step 6
+
+Scroll down and click:
+
+Commit changes
+Then add this file
+Step 7
+
+In GitHub, click:
+
+Add file
+Create new file
+Step 8
+
+Name it:
+
+vercel.json
+Step 9
+
+Paste this in:
+
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install --include=dev --no-audit --no-fund",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}
+Step 10
+
+Commit changes
+
+Then check Vercel
+Step 11
+
+Go to Vercel → your project → Settings
+
+Step 12
+
+Find:
+
+Node.js Version
+
+Set it to:
+
+20.x
+Step 13
+
+Save
+
+Then redeploy
+Step 14
+
+Go to:
+
+Deployments
+Step 15
+
+Click:
+
+Redeploy
+choose without cache if it shows that option
+Very important check
+
+After editing package.json, open it again in GitHub and confirm the build line now says exactly:
+
+"build": "vite build"
+
+If it still says:
+
+"build": "tsc -b && vite build"
+
+then the change did not save.
+
+If it still fails
+
+Send me the full part of the log that starts at:
+
+> propcon-canvassing-app@1.0.0 build
+
+and the next 5 to 10 lines after that. That will show the exact command still failing.
+
+This is the build log:  "Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Cloning github.com/TeamZARA/Total-Steph (Branch: main, Commit: 0925348)
+Skipping build cache, deployment was triggered without cache.
+Cloning completed: 502.000ms
+SyntaxError: /vercel/path0/package.json: Expected ',' or '}' after property value in JSON at position 188
+    at JSON.parse (<anonymous>)
+    at aGn (/var/task/sandbox.js:76:527)
+    at async Ab (/var/task/sandbox.js:968:1068)
+    at async /var/task/sandbox.js:972:2910
+    at async /var/task/sandbox.js:972:5241
+    at async Uut (/var/task/sandbox.js:972:2378)
+    at async Promise.all (index 0)
+    at async /var/task/sandbox.js:1034:51749
+    at async dgn (/var/task/sandbox.js:1034:49930)
+    at async CWa (/var/task/sandbox.js:1036:1299)"
+
+Perfect — now we know the exact issue.
+
+Your package.json file is broken because the JSON formatting is invalid.
+
+This line from the log tells us that:
+
+SyntaxError: /vercel/path0/package.json: Expected ',' or '}' after property value in JSON
+
+So Vercel cannot even read package.json.
+
+Easiest fix
+
+You need to replace your whole package.json with a clean version.
+
+Do this exactly in GitHub
+Step 1
+
+Open your GitHub repo
+
+Step 2
+
+Click on:
+
+package.json
+Step 3
+
+Click the pencil/edit button
+
+Step 4
+
+Delete everything in that file
+
+Step 5
+
+Paste this exact version:
+
+{
+  "name": "propcon-canvassing-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.0",
     "framer-motion": "^12.38.0",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^0.542.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -21,8 +217,5 @@
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.3"
-  },
-  "engines": {
-    "node": "20.x"
   }
 }
